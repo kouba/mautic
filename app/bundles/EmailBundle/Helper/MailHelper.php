@@ -1472,8 +1472,10 @@ class MailHelper
         if ($listUnsubscribeHeader) {
             if (!empty($headers['List-Unsubscribe'])) {
                 // Ensure Mautic's is always part of this header
-                $headers['List-Unsubscribe'] .= ','.$listUnsubscribeHeader;
-            } else {
+                if (strpos($headers['List-Unsubscribe'], $listUnsubscribeHeader) === false) {
+                    // Ensure Mautic's is always part of this header
+                    $headers['List-Unsubscribe'] .= ',' . $listUnsubscribeHeader;
+                }            } else {
                 $headers['List-Unsubscribe'] = $listUnsubscribeHeader;
             }
         }
@@ -2117,6 +2119,11 @@ class MailHelper
                     $messageHeaders->addTextHeader($headerKey, $headerValue);
                 }
             }
+        }
+
+        if (array_key_exists('List-Unsubscribe', $headers)) {
+            unset($headers['List-Unsubscribe']);
+            $this->setCustomHeaders($headers, false);
         }
     }
 
